@@ -12,14 +12,21 @@ class window.App extends Backbone.Model
     @set 'dealerHand', deck.dealDealer()
     @set 'isGameOver', false
     @get('playerHand').on 'gameOver', ->
-      playerScore = Math.max.apply null, @get('playerHand').scores()
-      dealerScore = Math.max.apply null, @get('dealerHand').scores()
+      if Math.max.apply(null, @get('playerHand').scores()) > 21
+        playerScore = Math.min.apply(null, @get('playerHand').scores())
+      else
+        playerScore = Math.max.apply(null, @get('playerHand').scores())
       if playerScore > 21
         @set 'losses', @get('losses') + 1
-      else if playerScore > dealerScore
-        @set 'wins', @get('wins') + 1
-      else if playerScore != dealerScore
-        @set 'losses', @get('losses') + 1
+      else
+        @get('dealerHand').playDealerHand()
+        dealerScore = Math.max.apply null, @get('dealerHand').scores()
+        if dealerScore > 21
+          @set 'wins', @get('wins') + 1
+        else if playerScore > dealerScore
+          @set 'wins', @get('wins') + 1
+        else if playerScore != dealerScore
+          @set 'losses', @get('losses') + 1
       @set 'isGameOver', true
     , @
 
